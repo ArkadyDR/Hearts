@@ -8,8 +8,7 @@ export default function configureEndpoints(server) {
     method: 'GET',
     path: '/game/hands/{pid}',
     config: {
-      description: 'Get a player\'s hand',
-      notes: 'Gets a player\'s hand based on the game ID and player ID provided',
+      description: 'Get a player\'s current hand',
       tags: ['api', 'game'],
 
       validate: {
@@ -29,6 +28,7 @@ export default function configureEndpoints(server) {
     method: 'GET',
     path: '/game/tricks',
     config: {
+      description: 'Get the list of tricks',
       tags: ['api', 'game'],
 
       validate: {
@@ -37,8 +37,7 @@ export default function configureEndpoints(server) {
       },
 
       handler: (request, reply) => {
-        // TODO: this needs to be an access method?
-        const tricks = game.tricks;
+        const tricks = game.getTricks();
         reply(tricks);
       },
     },
@@ -48,6 +47,7 @@ export default function configureEndpoints(server) {
     method: 'POST',
     path: '/game/play/{pid}',
     config: {
+      description: 'Play a card',
       tags: ['api', 'game'],
 
       validate: {
@@ -55,14 +55,14 @@ export default function configureEndpoints(server) {
           pid: Joi.number().integer().min(0).max(3).required().description('the player id'),
         },
         payload: {
-          suit: Joi.string().required().description('the card suit'),
+          suit: Joi.string().valid('hearts', 'diamonds', 'clubs', 'spades')
+            .required().description('the card suit'),
           face: Joi.number().integer().min(1).max(13).required().description('the card face value'),
         },
       },
 
       handler: (request, reply) => {
         const pid = request.params.pid;
-        // TODO: Validate that this is a real card
         const card = request.payload;
         const result = game.play(pid, card);
         reply(result);
@@ -70,10 +70,17 @@ export default function configureEndpoints(server) {
     },
   });
 
-  // Routes TODO
-  /*
-    scoring
-    multiple games in parallel
-    better error handling
-  */
+  server.route({
+    method: 'GET',
+    path: '/game/scores',
+    config: {
+      description: 'Get the scores',
+      tags: ['api', 'game'],
+
+      handler: (request, reply) => {
+        const scores = game.getScores();
+        reply(scores);
+      },
+    },
+  });
 }

@@ -21,12 +21,7 @@ export default class HeartsGame {
     const shuffledDeck = Lodash.shuffle(deck);
 
     // deal into 4 hands
-    const hands = [
-      [],
-      [],
-      [],
-      [],
-    ];
+    const hands = [[], [], [], []];
 
     for (let i = 0; i < shuffledDeck.length; i++) {
       hands[i % hands.length].push(shuffledDeck[i]);
@@ -37,6 +32,14 @@ export default class HeartsGame {
 
   getHand(pid) {
     return this.hands[pid];
+  }
+
+  getScores() {
+    return this.scores;
+  }
+
+  getTricks() {
+    return this.tricks;
   }
 
   play(pid, card) {
@@ -78,11 +81,15 @@ export default class HeartsGame {
     if (currentTrick.cards.length === this.hands.length) {
       // determine winning player
       currentTrick.winner = this.determineCurrentTrickWinner();
+      delete currentTrick.next;
 
       if (Lodash.some(this.hands, (hand) => hand.length === 0)) {
         this.scoreRound();
-        // TODO: Test to see if a player has met the loss condition ( > 50 points )
-        this.startFirstTrick();
+
+        // only continue if someone hasn't breached 50 points yet
+        if (!Lodash.some(this.scores, score => score > 50)) {
+          this.startFirstTrick();
+        }
       } else {
         this.startNextTrick();
       }
@@ -96,6 +103,7 @@ export default class HeartsGame {
     this.heartsBroken = false;
     this.hands = this.deal();
     this.tid = 0;
+    this.scores = [0, 0, 0, 0];
 
     this.tricks[this.tid] = {
       // lead is the player with the two of clubs
@@ -148,6 +156,35 @@ export default class HeartsGame {
     // 2. Queen of spades = 13 points
     // UNLESS
     // 3. Player has all hearts + Queen of Spades, then = 0 and all others 26
+
+    const cards = Lodash.flatten(this.tricks);
+    const scores = [0, 0, 0, 0];
+
+    for (let i = 0; i < this.hands.length; i++) {
+      const playerCards = Lodash.filter(cards, (card) => i === card.pid);
+      const playerScore = Lodash.sumBy(playerCards, (card) => {
+        if (card.suit === 'hearts') {
+          return 1;
+        } else if (card.suit === 'spades' && card.face === 12) {
+          return 13;
+        }
+        return 0;
+      });
+
+      scores[i] = playerScore;
+    }
+
+    // work out if someone shot the moon, if so then everyone else gets 26 and they get 0
+    if (Lodash.some(scores, 26)) {
+      for (let i = 0; i < this.hands.length; i++) {
+        scores[i] = 26 - scores[i];
+      }
+    }
+
+    // add the scores to the running tally
+    for (let i = 0; i < this.hands.length; i++) {
+      this.scores[i] += scores[i];
+    }
   }
 
   validateCardIsLegal(pid, card) {
