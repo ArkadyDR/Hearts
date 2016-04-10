@@ -1,22 +1,33 @@
 const Hapi = require('hapi');
+const HapiSwagger = require('hapi-swagger');
+const Inert = require('inert');
+const Vision = require('vision');
+
+import configureEndpoints from './endpoints';
 
 const server = new Hapi.Server();
 server.connection({ port: 3000 });
 
-server.route({
-  method: 'GET',
-  path: '/',
-  handler: (request, reply) => {
-    reply('Hello, World!');
-  },
-});
+configureEndpoints(server);
 
-server.route({
-  method: 'GET',
-  path: '/{name}',
-  handler: (request, reply) => {
-    reply(`Hello, ${encodeURIComponent(request.params.name)}!`);
+server.register([
+  Inert,
+  Vision,
+  {
+    register: HapiSwagger,
+    options: {
+      info: {
+        title: 'Hearts Server API Documentation',
+        version: '0.0.1',
+      },
+    },
   },
+], (err) => {
+  if (err) {
+    console.log('Hapi-Swagger Load Error ' + err);
+  } else {
+    console.log('Hapi-Swagger Loaded');
+  }
 });
 
 server.start((err) => {

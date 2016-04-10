@@ -5,4 +5,8 @@
     "browser": true,
     "node": true
   },
+
+  "ecmaFeatures": {
+    "experimentalObjectRestSpread": true
+  }
 }
