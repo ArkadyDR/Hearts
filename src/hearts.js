@@ -10,7 +10,7 @@ export default class HeartsGame {
     // create deck
     const deck = [];
     for (const suit of ['hearts', 'diamonds', 'clubs', 'spades']) {
-      for (let face = 1; face <= 13; face++) {
+      for (let face = 2; face <= 14; face++) {
         deck.push({
           suit,
           face,

@@ -57,7 +57,7 @@ export default function configureEndpoints(server) {
         payload: {
           suit: Joi.string().valid('hearts', 'diamonds', 'clubs', 'spades')
             .required().description('the card suit'),
-          face: Joi.number().integer().min(1).max(13).required().description('the card face value'),
+          face: Joi.number().integer().min(2).max(14).required().description('the card face value'),
         },
       },
 
