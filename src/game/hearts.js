@@ -4,6 +4,11 @@ export const INVALID_WRONG_PLAYER = 'INVALID_WRONG_PLAYER';
 export const INVALID_UNOWNED_CARD = 'INVALID_UNOWNED_CARD';
 export const INVALID_ILLEGAL_PLAY = 'INVALID_ILLEGAL_PLAY';
 
+export const HEARTS = 'hearts';
+export const DIAMONDS = 'diamonds';
+export const CLUBS = 'clubs';
+export const SPADES = 'spades';
+
 /*
 game: {
   hands: [
@@ -41,7 +46,7 @@ export function validateHandContainsSuitOtherThan(hand, suit) {
 }
 
 export function validateCardIsPointCard(card) {
-  return card.suit === 'hearts' || (card.face === 12 && card.suit === 'spades');
+  return card.suit === HEARTS || (card.face === 12 && card.suit === SPADES);
 }
 
 // needed to check if hand can play something other than a point card
@@ -59,7 +64,7 @@ export function validatePlayerIsNext(pid, game) {
 
 export function validateHeartsIsBroken(tricks) {
   const cards = Lodash.flatten(tricks);
-  return Lodash.some(cards, card => card.suit === 'hearts');
+  return Lodash.some(cards, card => card.suit === HEARTS);
 }
 
 export function validateRoundIsFinished(tricks) {
@@ -83,7 +88,7 @@ export function validateCardIsLegal(hand, tricks, card) {
   // first trick, player has the lead
   if (tricks.length === 1 && trick.cards.length === 0) {
     // must play 2 of clubs
-    if (card.suit !== 'clubs' || card.face !== 2) {
+    if (card.suit !== CLUBS || card.face !== 2) {
       return false;
     }
   }
@@ -99,8 +104,8 @@ export function validateCardIsLegal(hand, tricks, card) {
   // not the first trick, player has the lead
   if (tricks.length > 0 && trick.cards.length === 0) {
     // must not play heart if hearts not broken
-    if (card.suit === 'hearts' && !validateHeartsIsBroken(tricks)
-      && validateHandContainsSuitOtherThan(hand, 'hearts')) {
+    if (card.suit === HEARTS && !validateHeartsIsBroken(tricks)
+      && validateHandContainsSuitOtherThan(hand, HEARTS)) {
       return false;
     }
   }
@@ -121,7 +126,7 @@ export function validateCardIsLegal(hand, tricks, card) {
 function dealHands() {
   // create initial ordered deck
   let deck = [];
-  for (const suit of ['hearts', 'diamonds', 'clubs', 'spades']) {
+  for (const suit of [HEARTS, DIAMONDS, CLUBS, SPADES]) {
     for (let face = 2; face <= 14; face++) {
       deck.push({
         suit,
@@ -166,9 +171,9 @@ function scoreRound(tricks) {
   for (let i = 0; i < this.hands.length; i++) {
     const playerCards = Lodash.filter(cards, (card) => i === card.pid);
     const playerScore = Lodash.sumBy(playerCards, (card) => {
-      if (card.suit === 'hearts') {
+      if (card.suit === HEARTS) {
         return 1;
-      } else if (card.suit === 'spades' && card.face === 12) {
+      } else if (card.suit === SPADES && card.face === 12) {
         return 13;
       }
       return 0;
@@ -204,7 +209,7 @@ function finishGame(scores) {
 
 export function startRound(scores) {
   const hands = dealHands();
-  const lead = Lodash.findIndex(hands, (hand) => Lodash.some(hand, { suit: 'clubs', face: 2 }));
+  const lead = Lodash.findIndex(hands, (hand) => Lodash.some(hand, { suit: CLUBS, face: 2 }));
 
   return {
     scores,
