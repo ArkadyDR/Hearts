@@ -1,12 +1,24 @@
 {
   "extends": "airbnb",
+  "parser": "babel-eslint",
+  "plugins": [ "babel", "json"],
+
+  "rules": {
+    "padded-blocks": 0,
+    "comma-dangle": 0,
+    "strict": 0,
+    "max-len": [2, 150, 2],
+    "new-cap": 0,
+    "babel/new-cap": 1,
+    "object-shorthand": 0,
+    "babel/object-shorthand": 1,
+    "react/jsx-closing-bracket-location": [1, {"selfClosing": "after-props", "nonEmpty": "after-props"}],
+    "react/no-multi-comp": 0
+  },
 
   "env": {
     "browser": true,
-    "node": true
+    "node": true,
+    "mocha": true,
   },
-
-  "ecmaFeatures": {
-    "experimentalObjectRestSpread": true
-  }
 }

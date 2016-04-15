@@ -1,7 +1,8 @@
-const Joi = require('joi');
-import HeartsGame from './hearts';
+import Joi from 'joi';
+import Boom from 'boom';
+import { startRound, play } from '../game/hearts';
 
-const game = new HeartsGame();
+let game = startRound([0, 0, 0, 0]);
 
 export default function configureEndpoints(server) {
   server.route({
@@ -18,7 +19,7 @@ export default function configureEndpoints(server) {
       },
 
       handler: (request, reply) => {
-        const hand = game.getHand(request.params.pid);
+        const hand = game.hands[request.params.pid];
         reply({ pid: request.params.pid, hand });
       },
     },
@@ -37,8 +38,7 @@ export default function configureEndpoints(server) {
       },
 
       handler: (request, reply) => {
-        const tricks = game.getTricks();
-        reply(tricks);
+        reply(game.tricks);
       },
     },
   });
@@ -64,8 +64,19 @@ export default function configureEndpoints(server) {
       handler: (request, reply) => {
         const pid = request.params.pid;
         const card = request.payload;
-        const result = game.play(pid, card);
-        reply(result);
+        const result = play(pid, game, card);
+
+        if (!result.success) {
+          const err = Boom.badRequest(result.message, { reason: result.reason });
+          err.output.payload.details = err.data;
+          reply(err);
+        } else if (game.winner) {
+          reply(`Play succeeded. Game complete. Winner was pid ${game.winner}.`);
+          game = startRound([0, 0, 0, 0]);
+        } else {
+          game = result.game;
+          reply('Play succeeded. Game continues.');
+        }
       },
     },
   });
@@ -78,8 +89,7 @@ export default function configureEndpoints(server) {
       tags: ['api', 'game'],
 
       handler: (request, reply) => {
-        const scores = game.getScores();
-        reply(scores);
+        reply(game.scores);
       },
     },
   });

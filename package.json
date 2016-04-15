@@ -10,17 +10,24 @@
     "lodash": "^4.9.0"
   },
   "devDependencies": {
+    "babel-eslint": "^6.0.2",
+    "babel-plugin-transform-object-rest-spread": "^6.6.5",
+    "chai": "^3.5.0",
     "eslint": "^2.7.0",
     "eslint-config-airbnb": "^6.2.0",
+    "eslint-plugin-babel": "^3.2.0",
+    "eslint-plugin-json": "^1.2.0",
     "eslint-plugin-react": "^4.3.0",
     "hapi": "^13.3.0",
     "hapi-swagger": "^5.0.0",
     "inert": "^3.2.0",
     "joi": "^8.0.5",
+    "mocha": "^2.4.5",
+    "node-inspector": "^0.12.8",
     "vision": "^4.1.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha --compilers js:babel-core/register"
   },
   "author": "",
   "license": "ISC"
