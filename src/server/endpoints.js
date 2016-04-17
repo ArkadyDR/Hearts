@@ -20,7 +20,7 @@ export default function configureEndpoints(server) {
 
       handler: (request, reply) => {
         const hand = game.hands[request.params.pid];
-        reply({ pid: request.params.pid, hand });
+        reply({ pid: request.params.pid, cards: hand });
       },
     },
   });
