@@ -63,8 +63,7 @@ export function validatePlayerIsNext(pid, game) {
 }
 
 export function validateHeartsIsBroken(tricks) {
-  const cards = Lodash.flatten(tricks);
-  return Lodash.some(cards, card => card.suit === HEARTS);
+  return Lodash.some(tricks, trick => Lodash.some(trick.cards, card => card.suit === HEARTS));
 }
 
 export function validateRoundIsFinished(tricks) {
@@ -78,7 +77,7 @@ export function validateGameIsFinished(scores) {
 export function validateCardIsLegal(hand, tricks, card) {
   // Rules are:
   //
-  // 1. Can't lead a heart if this.heartsBroken === false unless no other choice
+  // 1. Can't lead a heart if hearts not broken unless no other choice
   // 2. If not leading, must follow suit unless no cards of suit in hand
   // 3. If first trick, must lead 2 of clubs
   // 4. If first trick, cannot play a point card unless no other choice
@@ -139,7 +138,12 @@ function dealHands() {
   deck = Lodash.shuffle(deck);
 
   // deal into 4 hands
-  return [deck.slice(0, 13), deck.slice(13, 26), deck.slice(26, 39), deck.slice(39, 52)];
+  let hands = [deck.slice(0, 13), deck.slice(13, 26), deck.slice(26, 39), deck.slice(39, 52)];
+
+  // sort cards in order by suit
+  hands = hands.map(hand => Lodash.sortBy(hand, ['suit', 'face']));
+
+  return hands;
 }
 
 function finishTrick(trick) {
@@ -168,7 +172,7 @@ function scoreRound(tricks) {
   const cards = Lodash.flatten(tricks);
   const scores = [0, 0, 0, 0];
 
-  for (let i = 0; i < this.hands.length; i++) {
+  for (let i = 0; i < 4; i++) {
     const playerCards = Lodash.filter(cards, (card) => i === card.pid);
     const playerScore = Lodash.sumBy(playerCards, (card) => {
       if (card.suit === HEARTS) {
@@ -184,7 +188,7 @@ function scoreRound(tricks) {
 
   // work out if someone shot the moon, if so then everyone else gets 26 and they get 0
   if (Lodash.some(scores, 26)) {
-    for (let i = 0; i < this.hands.length; i++) {
+    for (let i = 0; i < 4; i++) {
       scores[i] = 26 - scores[i];
     }
   }
@@ -207,7 +211,7 @@ function finishGame(scores) {
   return Lodash.indexOf(scores, Lodash.max(scores));
 }
 
-export function startRound(scores) {
+export function startRound(scores = [0, 0, 0, 0]) {
   const hands = dealHands();
   const lead = Lodash.findIndex(hands, (hand) => Lodash.some(hand, { suit: CLUBS, face: 2 }));
 

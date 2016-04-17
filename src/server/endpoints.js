@@ -2,7 +2,7 @@ import Joi from 'joi';
 import Boom from 'boom';
 import { startRound, play } from '../game/hearts';
 
-let game = startRound([0, 0, 0, 0]);
+let game = startRound();
 
 export default function configureEndpoints(server) {
   server.route({
@@ -72,7 +72,7 @@ export default function configureEndpoints(server) {
           reply(err);
         } else if (game.winner) {
           reply(`Play succeeded. Game complete. Winner was pid ${game.winner}.`);
-          game = startRound([0, 0, 0, 0]);
+          game = startRound();
         } else {
           game = result.game;
           reply('Play succeeded. Game continues.');
