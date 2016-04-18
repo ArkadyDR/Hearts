@@ -26,7 +26,7 @@ describe('Hearts', () => {
     });
 
     it('uniqueCards', () => {
-      assert.equal(Lodash.uniqWith(Lodash.flatten(game.hands), Lodash.isEqual).length, 52);
+      assert.equal(Lodash.uniqWith(Lodash.flatMap(game.hands), Lodash.isEqual).length, 52);
     });
 
     it('correctHandSizes', () => {
@@ -123,7 +123,7 @@ describe('Hearts', () => {
 
     it('pointOnFirst_heart', () => {
       // player 2 also has the 7 of hearts, but can't play due to rules
-      const result = play(2, game, { suit: HEARTS, face: 7 });
+      const result = play(2, game, { suit: HEARTS, face: 13 });
       assert.isFalse(result.success);
       assert.equal(result.reason, INVALID_ILLEGAL_PLAY);
     });
@@ -327,68 +327,74 @@ describe('Hearts', () => {
       game = play(1, game, { suit: CLUBS, face: 7 }).game;
       game = play(2, game, { suit: DIAMONDS, face: 8 }).game;
       game = play(3, game, { suit: CLUBS, face: 8 }).game;
+    });
 
+    it('noShotTheMoon_gameContinues', () => {
       // Fifth Trick
-      game = play(0, game, { suit: HEARTS, face: 14 }).game;
+      game = play(0, game, { suit: HEARTS, face: 9 }).game;
       game = play(1, game, { suit: HEARTS, face: 11 }).game;
-      game = play(2, game, { suit: HEARTS, face: 7 }).game;
+      game = play(2, game, { suit: HEARTS, face: 13 }).game;
       game = play(3, game, { suit: HEARTS, face: 10 }).game;
 
       // Sixth Trick
-      game = play(0, game, { suit: HEARTS, face: 13 }).game;
+      game = play(2, game, { suit: HEARTS, face: 2 }).game;
+      game = play(3, game, game.hands[3][0]).game;
+      game = play(0, game, { suit: HEARTS, face: 12 }).game;
+      game = play(1, game, game.hands[1][0]).game;
+
+      // Seventh through Thirteenth Tricks
+      //
+      // At this point it doesn't matter what cards are played, so just play whatever is first in
+      // their hands. (Player 0 has only hearts and is leading, no-one else has any hearts) .
+      for (let t = 7; t <= 13; t++) {
+        for (let p = 0; p <= 3; p++) {
+          game = play(p, game, game.hands[p][0]).game;
+        }
+      }
+
+      // the scores were seeded at 0, 2, 20, 30
+      // player 1 earnt 22 points, player 3 earnt 4 points, the others earnt 0
+      assert.equal(game.winner, undefined, 'Game should not have finished');
+      assert.equal(game.scores[0], 22, 'Player 0 score incorrect');
+      assert.equal(game.scores[1], 2, 'Player 1 score incorrect');
+      assert.equal(game.scores[2], 24, 'Player 2 score incorrect');
+      assert.equal(game.scores[3], 30, 'Player 3 score incorrect');
+
+      // check that a new round is ready to go
+      assert.equal(game.tricks.length, 1, 'New initial trick not started');
+      assert.isTrue(Lodash.every(game.hands, hand => hand.length === 13), 'New hands not dealt');
+    });
+
+    it('shotTheMoon_gameOver', () => {
+      // Fifth Trick
+      game = play(0, game, { suit: HEARTS, face: 14 }).game;
+      game = play(1, game, { suit: HEARTS, face: 11 }).game;
+      game = play(2, game, { suit: HEARTS, face: 13 }).game;
+      game = play(3, game, { suit: HEARTS, face: 10 }).game;
+
+      // Sixth Trick
+      game = play(0, game, { suit: HEARTS, face: 12 }).game;
       game = play(1, game, game.hands[1][0]).game;
       game = play(2, game, { suit: HEARTS, face: 2 }).game;
       game = play(3, game, game.hands[3][0]).game;
 
-      // Seventh Trick
-      game = play(0, game, { suit: HEARTS, face: 12 }).game;
-      game = play(1, game, game.hands[1][0]).game;
-      game = play(2, game, game.hands[2][0]).game;
-      game = play(3, game, game.hands[3][0]).game;
+      // Seventh through Thirteenth Tricks
+      //
+      // At this point it doesn't matter what cards are played, so just play whatever is first in
+      // their hands. (Player 0 has only hearts and is leading, no-one else has any hearts) .
+      for (let t = 7; t <= 13; t++) {
+        for (let p = 0; p <= 3; p++) {
+          game = play(p, game, game.hands[p][0]).game;
+        }
+      }
 
-      // Eigth Trick
-      game = play(0, game, { suit: HEARTS, face: 9 }).game;
-      game = play(1, game, game.hands[1][0]).game;
-      game = play(2, game, game.hands[2][0]).game;
-      game = play(3, game, game.hands[3][0]).game;
-
-      // Ninth Trick
-      game = play(0, game, { suit: HEARTS, face: 8 }).game;
-      game = play(1, game, game.hands[1][0]).game;
-      game = play(2, game, game.hands[2][0]).game;
-      game = play(3, game, game.hands[3][0]).game;
-
-      // Tenth Trick
-      game = play(0, game, { suit: HEARTS, face: 6 }).game;
-      game = play(1, game, game.hands[1][0]).game;
-      game = play(2, game, game.hands[2][0]).game;
-      game = play(3, game, game.hands[3][0]).game;
-
-      // Eleventh Trick
-      game = play(0, game, { suit: HEARTS, face: 5 }).game;
-      game = play(1, game, game.hands[1][0]).game;
-      game = play(2, game, game.hands[2][0]).game;
-      game = play(3, game, game.hands[3][0]).game;
-
-      // Twelfth Trick
-      game = play(0, game, { suit: HEARTS, face: 4 }).game;
-      game = play(1, game, game.hands[1][0]).game;
-      game = play(2, game, game.hands[2][0]).game;
-      game = play(3, game, game.hands[3][0]).game;
-
-      // Thirteenth Trick
-      game = play(0, game, { suit: HEARTS, face: 3 }).game;
-      game = play(1, game, game.hands[1][0]).game;
-      game = play(2, game, game.hands[2][0]).game;
-      game = play(3, game, game.hands[3][0]).game;
-    });
-
-    it('winning_shotTheMoon', () => {
-      assert.equal(game.winner, 0);
-      assert.equal(game.scores[0], 0);
-      assert.equal(game.scores[0], 28);
-      assert.equal(game.scores[0], 46);
-      assert.equal(game.scores[0], 56);
+      // the scores were seeded at 0, 2, 20, 30
+      // each player earnt 26 points except for 0
+      assert.equal(game.winner, 0, 'Player 0 did not win');
+      assert.equal(game.scores[0], 0, 'Player 0 score incorrect');
+      assert.equal(game.scores[1], 28, 'Player 1 score incorrect');
+      assert.equal(game.scores[2], 46, 'Player 2 score incorrect');
+      assert.equal(game.scores[3], 56, 'Player 3 score incorrect');
     });
   });
 });

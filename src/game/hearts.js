@@ -67,7 +67,7 @@ export function validateHeartsIsBroken(tricks) {
 }
 
 export function validateRoundIsFinished(tricks) {
-  return tricks.length === 13;
+  return tricks.length === 13 && tricks[12].winner !== undefined;
 }
 
 export function validateGameIsFinished(scores) {
@@ -161,7 +161,7 @@ function finishTrick(trick) {
   };
 }
 
-function scoreRound(tricks) {
+function finishRound(tricks) {
   // Rules are:
   //
   // 1. Heart card = 1 point
@@ -169,12 +169,12 @@ function scoreRound(tricks) {
   // UNLESS
   // 3. Player has all hearts + Queen of Spades, then = 0 and all others 26
 
-  const cards = Lodash.flatten(tricks);
   const scores = [0, 0, 0, 0];
 
-  for (let i = 0; i < 4; i++) {
-    const playerCards = Lodash.filter(cards, (card) => i === card.pid);
-    const playerScore = Lodash.sumBy(playerCards, (card) => {
+  for (let idx = 0; idx < 4; idx++) {
+    const cards = Lodash.flatMap(
+      Lodash.filter(tricks, trick => trick.winner === idx), trick => trick.cards);
+    const score = Lodash.sumBy(cards, card => {
       if (card.suit === HEARTS) {
         return 1;
       } else if (card.suit === SPADES && card.face === 12) {
@@ -183,32 +183,21 @@ function scoreRound(tricks) {
       return 0;
     });
 
-    scores[i] = playerScore;
+    scores[idx] = score;
   }
 
   // work out if someone shot the moon, if so then everyone else gets 26 and they get 0
-  if (Lodash.some(scores, 26)) {
-    for (let i = 0; i < 4; i++) {
-      scores[i] = 26 - scores[i];
+  if (Lodash.some(scores, score => score === 26)) {
+    for (let idx = 0; idx < 4; idx++) {
+      scores[idx] = 26 - scores[idx];
     }
   }
 
   return scores;
 }
 
-function finishRound(tricks, scores) {
-  const roundScores = scoreRound(tricks);
-
-  return [
-    scores[0] + roundScores[0],
-    scores[1] + roundScores[1],
-    scores[2] + roundScores[2],
-    scores[3] + roundScores[3],
-  ];
-}
-
 function finishGame(scores) {
-  return Lodash.indexOf(scores, Lodash.max(scores));
+  return Lodash.indexOf(scores, Lodash.min(scores));
 }
 
 export function startRound(scores = [0, 0, 0, 0]) {
@@ -265,9 +254,13 @@ function playCard(hand, tricks, card) {
   const finishedTrick = finishTrick(trick);
   const updatedTrickList = [
     ...tricks.slice(0, tricks.length - 1),
-    finishedTrick,
-    { cards: [], next: finishedTrick.winner }
+    finishedTrick
   ];
+
+  if (updatedTrickList.length < 13) {
+    updatedTrickList.push({ cards: [], next: finishedTrick.winner });
+  }
+
   return {
     tricks: updatedTrickList,
     success: true,
@@ -301,6 +294,10 @@ export function play(pid, game, card) {
 
   if (validateRoundIsFinished(tricks)) {
     const scores = finishRound(tricks);
+
+    for (let idx = 0; idx < 4; idx++) {
+      scores[idx] += game.scores[idx];
+    }
 
     if (validateGameIsFinished(scores)) {
       const winner = finishGame(scores);
