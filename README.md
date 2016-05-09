@@ -24,6 +24,13 @@ npm start
 - Server will be available on http://localhost:3000
 - Swagger API UI available on http://localhost:3000/documentation
 
+## Running Client
+
+1. In a command shell:
+```
+npm run client
+```
+
 ## Running Tests
 
 1. In a command shell:
