@@ -16,7 +16,7 @@ npm install
 
 1. In a command shell:
 ```
-npm start
+npm run server
 ```
 
 ## Using Server
@@ -30,6 +30,10 @@ npm start
 ```
 npm run client
 ```
+
+## Using Client
+
+- Client will be available on http://localhost:8080
 
 ## Running Tests
 
