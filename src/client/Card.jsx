@@ -46,14 +46,13 @@ const Card = (props) => {
     playCard({ suit, face });
   };
 
-  let style = {
-  };
+  const className = `huge ui button ${valid ? 'green' : ''}`;
 
-  if (valid) {
-    style.backgroundColor = '#00FF00';
-  }
-
-  return <button style={style} disabled={!valid} onClick={onClick}>{suitChar} {faceChar}</button>;
+  return (
+    <button className={className} onClick={onClick} disabled={!valid}>
+        {faceChar} {suitChar}
+    </button>
+  );
 };
 
 Card.propTypes = {

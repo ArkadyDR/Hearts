@@ -21,12 +21,16 @@ const createStoreWithMiddleware = applyMiddleware(
 
 const store = createStoreWithMiddleware(heartsGame);
 
-store.dispatch(fetchHand(0));
-store.dispatch(fetchHand(1));
-store.dispatch(fetchHand(2));
-store.dispatch(fetchHand(3));
-store.dispatch(fetchTricks());
-store.dispatch(fetchScores());
+const updateState = () => {
+  store.dispatch(fetchHand(0));
+  store.dispatch(fetchHand(1));
+  store.dispatch(fetchHand(2));
+  store.dispatch(fetchHand(3));
+  store.dispatch(fetchTricks());
+  store.dispatch(fetchScores());
+};
+
+setInterval(updateState, 1000);
 
 ReactDOM.render(
   <Provider store={store}>

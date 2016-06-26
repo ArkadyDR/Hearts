@@ -1,8 +1,21 @@
 import Joi from 'joi';
 import Boom from 'boom';
-import { startRound, play } from '../game/hearts';
+import * as Hearts from '../game/hearts';
+import * as AI from '../game/ai';
 
-let game = startRound();
+let game = Hearts.startRound();
+
+function makeAIPlays() {
+  const humanID = 0;
+
+  while (!Hearts.validatePlayerIsNext(humanID, game)) {
+    const playerID = game.tricks[game.tricks.length - 1].next;
+    const card = AI.chooseCardToPlay(game.hands[playerID], game.tricks);
+    game = Hearts.play(playerID, game, card).game;
+  }
+}
+
+makeAIPlays(game);
 
 export default function configureEndpoints(server) {
   server.route({
@@ -64,7 +77,7 @@ export default function configureEndpoints(server) {
       handler: (request, reply) => {
         const pid = request.params.pid;
         const card = request.payload;
-        const result = play(pid, game, card);
+        const result = Hearts.play(pid, game, card);
 
         if (!result.success) {
           const err = Boom.badRequest(result.message, { reason: result.reason });
@@ -72,9 +85,10 @@ export default function configureEndpoints(server) {
           reply(err);
         } else if (game.winner) {
           reply(`Play succeeded. Game complete. Winner was pid ${game.winner}.`);
-          game = startRound();
+          game = Hearts.startRound();
         } else {
           game = result.game;
+          makeAIPlays();
           reply('Play succeeded. Game continues.');
         }
       },

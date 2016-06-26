@@ -10,7 +10,9 @@ const Player = (props) => {
   return (
     <div>
       <h1>{`Player ${props.id} Hand`}</h1>
-      {cards}
+      <div className="ui segment">
+        {cards}
+      </div>
     </div>
   );
 };

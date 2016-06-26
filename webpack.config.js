@@ -1,8 +1,8 @@
-// var ExtractTextPlugin = require('extract-text-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   entry: {
-    // client_react_ven: './src/vendor.js',
+    vendor: './src/client/vendor.js',
     client: './src/client/client.js'
   },
   output: {
@@ -25,25 +25,44 @@ module.exports = {
       },
 
       // CSS Loaders
-      // { test: /\.css$/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader') },
+      {
+        test: /\.css$/,
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader'),
+      },
 
       // Image and Font Loaders
-      // { test: /\.woff2?$/, loader: 'url-loader'},
-      // { test: /\.ttf$/, loader: 'url-loader'},
-      // { test: /\.eot$/, loader: 'url-loader'},
-      // { test: /\.svg$/, loader: 'url-loader'},
-      // { test: /\.png$/, loader: 'url-loader'},
-      // { test: /\.jpg$/, loader: 'url-loader'}
+      {
+        test: /\.woff2?$/,
+        loader: 'url-loader',
+      },
+      {
+        test: /\.ttf$/,
+        loader: 'url-loader'
+      },
+      {
+        test: /\.eot$/,
+        loader: 'url-loader'
+      },
+      {
+        test: /\.svg$/,
+        loader: 'url-loader'
+      },
+      {
+        test: /\.png$/,
+        loader: 'url-loader'
+      },
+      {
+        test: /\.jpg$/,
+        loader: 'url-loader'
+      },
     ]
   },
 
-  /*
   plugins: [
     new ExtractTextPlugin('[name].css', {
       allChunks: true
     })
   ],
-  */
 
   // NOTE: Use 'source-map' for source maps
   devtool: 'source-map',
