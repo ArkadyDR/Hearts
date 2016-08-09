@@ -12,6 +12,14 @@
 npm install
 ```
 
+Semantic-UI will detect the semantic.json file, say yes that you'll use the existing config, yes that the current directory is your module directory and yes that you want to install to semantic/.
+
+3. Change into the semantic/ directory.
+4. Run the gulp build:
+```
+../node_modules/.bin/gulp build
+```
+
 ## Running Server
 
 1. In a command shell:
