@@ -8,11 +8,11 @@
 
 1. Clone repository.
 2. Install NPM dependencies:
-```
-npm install
-```
+  ```
+  npm install
+  ```
 
-Semantic-UI will detect the semantic.json file, say yes that you'll use the existing config, yes that the current directory is your module directory and yes that you want to install to semantic/.
+  Semantic-UI will detect the semantic.json file, say yes that you'll use the existing config, yes that the current directory is your module directory and yes that you want to install to semantic/.
 
 3. Change into the semantic/ directory.
 4. Run the gulp build:
