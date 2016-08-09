@@ -16,9 +16,9 @@
 
 3. Change into the semantic/ directory.
 4. Run the gulp build:
-```
-../node_modules/.bin/gulp build
-```
+  ```
+  ../node_modules/.bin/gulp build
+  ```
 
 ## Running Server
 
