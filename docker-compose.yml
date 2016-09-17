@@ -1,0 +1,24 @@
+version: "2"
+
+services:
+  server:
+    build: .
+    container_name: hearts_server
+    command: npm run server
+    volumes:
+      - .:/home/hearts/app
+      - /home/hearts/app/node_modules
+    ports:
+      - "3000:3000"
+
+  client:
+    build: .
+    container_name: hearts_client
+    depends_on:
+      - server
+    command: npm run client
+    volumes:
+      - .:/home/hearts/app
+      - /home/hearts/app/node_modules
+    ports:
+      - "8080:8080"
