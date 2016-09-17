@@ -48,7 +48,7 @@
     "webpack-dev-server": "^1.14.1"
   },
   "scripts": {
-    "client": "./node_modules/.bin/webpack-dev-server --content-base build",
+    "client": "./node_modules/.bin/webpack-dev-server --content-base build --host 0.0.0.0 --port 8080",
     "server": "node server.js",
     "test": "./node_modules/.bin/mocha --compilers js:babel-core/register"
   },

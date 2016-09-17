@@ -2,7 +2,7 @@
 
 ## Application Prerequisites
 
-- Node (v 5.x)
+- Node (v 5.x) -- not required if you take [The Docker Option](#the-docker-option)
 
 ## Initial Setup
 
@@ -48,6 +48,27 @@ npm run client
 1. In a command shell:
 ```
 npm test
+```
+
+## The Docker Option
+
+This will run the server and client without any pre-requisites.
+No need to install Node.
+
+1. Install [Docker](https://docs.docker.com/engine/installation/)
+2. Install [Docker Compose](https://docs.docker.com/compose/install/)
+3. Clone the repository
+4. To start the services, run `docker-compose up`
+5. You can stop the services with CTRL-C, or `docker-compose stop`
+
+The first time you run this, it will take several minutes as it has to build
+the docker images. Subsequent executions should only take seconds.
+
+### Running Tests in Docker
+
+While the containers are running;
+```
+docker-compose run server npm test
 ```
 
 ## Editor Notes

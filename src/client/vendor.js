@@ -1,4 +1,4 @@
 // Vendor Dependencies
 jQuery = window.jQuery = require('jquery');
-require('../../semantic/dist/semantic.min.js');
-require('../../semantic/dist/semantic.min.css');
+require('../../node_modules/semantic-ui/dist/semantic.min.js');
+require('../../node_modules/semantic-ui/dist/semantic.min.css');
